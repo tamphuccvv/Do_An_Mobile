@@ -3,9 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:timeago/timeago.dart' as timeago;
 import '../../services/api_service.dart';
 import '../../models/comment_model.dart';
+import '../../providers/theme_provider.dart';
 import '../../utils/constants.dart';
 import '../../widgets/comment_widget.dart';
 
@@ -16,26 +16,19 @@ class AdminScreen extends StatefulWidget {
 
 class _AdminScreenState extends State<AdminScreen> {
   final ApiService _api = ApiService();
-
-  List<Map<String, dynamic>> _users = [];
-  List<CommentModel> _comments = [];
+  List<Map<String, dynamic>> _users    = [];
+  List<CommentModel>         _comments = [];
   bool _loading = true;
 
   @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
+  void initState() { super.initState(); _loadData(); }
 
   Future<void> _loadData() async {
     setState(() => _loading = true);
     try {
-      final users = await _api.getAllUsers();
+      final users    = await _api.getAllUsers();
       final comments = await _api.getAllComments();
-      setState(() {
-        _users = users;
-        _comments = comments;
-      });
+      setState(() { _users = users; _comments = comments; });
     } catch (e) {
       debugPrint('Admin load error: $e');
     } finally {
@@ -43,38 +36,59 @@ class _AdminScreenState extends State<AdminScreen> {
     }
   }
 
-  Future<void> _toggleAdmin(String uid, bool currentIsAdmin) async {
-    await _api.toggleAdmin(uid, currentIsAdmin);
+  Future<void> _toggleAdmin(String uid, bool isAdmin) async {
+    await _api.toggleAdmin(uid, isAdmin);
     await _loadData();
   }
 
   Future<void> _deleteUser(String uid) async {
-    await _api.deleteUser(uid);
-    await _loadData();
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Xác nhận xoá'),
+        content: const Text('Bạn có chắc muốn xoá người dùng này?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false),
+              child: const Text('Huỷ')),
+          TextButton(onPressed: () => Navigator.pop(context, true),
+              child: const Text('Xoá',
+                  style: TextStyle(color: Colors.red))),
+        ],
+      ),
+    );
+    if (ok == true) { await _api.deleteUser(uid); await _loadData(); }
   }
 
-  Future<void> _deleteComment(String commentId, String articleId) async {
-    await _api.deleteComment(commentId, articleId);
+  Future<void> _deleteComment(String id, String articleId) async {
+    await _api.deleteComment(id, articleId);
     await _loadData();
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.watch<ThemeProvider>();
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: theme.bg(context),
         appBar: AppBar(
-          backgroundColor: AppColors.surface,
+          backgroundColor: theme.surf(context),
           elevation: 0,
-          iconTheme: const IconThemeData(color: AppColors.textPrimary),
+          iconTheme: IconThemeData(color: theme.text(context)),
           title: Text('Quản trị viên',
               style: GoogleFonts.playfairDisplay(
-                  color: AppColors.textPrimary, fontWeight: FontWeight.w700)),
+                  color: theme.text(context),
+                  fontWeight: FontWeight.w700)),
+          actions: [
+            IconButton(
+                icon: const Icon(Icons.refresh),
+                onPressed: _loadData,
+                tooltip: 'Tải lại'),
+          ],
           bottom: TabBar(
-            labelColor: AppColors.accent,
-            unselectedLabelColor: AppColors.textCaption,
-            indicatorColor: AppColors.accent,
+            labelColor: theme.acc(context),
+            unselectedLabelColor: theme.cap(context),
+            indicatorColor: theme.acc(context),
             indicatorWeight: 2,
             labelStyle: GoogleFonts.robotoCondensed(
                 fontWeight: FontWeight.w700, letterSpacing: 0.8),
@@ -85,46 +99,78 @@ class _AdminScreenState extends State<AdminScreen> {
           ),
         ),
         body: _loading
-            ? const Center(
-            child: CircularProgressIndicator(color: AppColors.accent))
-            : TabBarView(
-          children: [
-            _buildUsersTab(),
-            _buildCommentsTab(),
-          ],
-        ),
+            ? Center(
+                child: CircularProgressIndicator(color: theme.acc(context)))
+            : TabBarView(children: [
+                _buildUsersTab(theme),
+                _buildCommentsTab(theme),
+              ]),
       ),
     );
   }
 
-  Widget _buildUsersTab() {
-    return ListView.builder(
+  Widget _buildUsersTab(ThemeProvider theme) {
+    if (_users.isEmpty) {
+      return Center(
+          child: Text('Chưa có người dùng',
+              style: GoogleFonts.merriweather(color: theme.cap(context))));
+    }
+    return ListView.separated(
       itemCount: _users.length,
-      itemBuilder: (context, index) {
-        final u = _users[index];
-        final bool isAdmin = u['isAdmin'] ?? false;
+      separatorBuilder: (_, __) => Divider(
+          color: theme.div(context), height: 1),
+      itemBuilder: (context, i) {
+        final u       = _users[i];
+        final isAdmin = u['isAdmin'] ?? false;
         return ListTile(
-          tileColor: AppColors.surface,
+          tileColor: theme.surf(context),
           leading: CircleAvatar(
-            backgroundColor: AppColors.accentLight,
+            backgroundColor: theme.accLight(context),
             child: Text(
-              u['username'].toString().isNotEmpty ? u['username'][0].toUpperCase() : '?',
-              style: const TextStyle(color: AppColors.accent),
+              (u['username'] ?? '?').toString().isNotEmpty
+                  ? u['username'].toString()[0].toUpperCase() : '?',
+              style: TextStyle(color: theme.acc(context)),
             ),
           ),
-          title: Text(u['username'] ?? 'Ẩn danh',
-              style: GoogleFonts.roboto(fontWeight: FontWeight.bold)),
-          subtitle: Text(u['email'] ?? ''),
-          trailing: PopupMenuButton(
-            icon: const Icon(Icons.more_vert),
+          title: Row(children: [
+            Flexible(
+              child: Text(u['username'] ?? 'Ẩn danh',
+                  style: GoogleFonts.roboto(
+                      fontWeight: FontWeight.bold,
+                      color: theme.text(context))),
+            ),
+            if (isAdmin) ...[
+              const SizedBox(width: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 6, vertical: 2),
+                color: theme.acc(context),
+                child: Text('ADMIN',
+                    style: GoogleFonts.robotoCondensed(
+                        color: Colors.white, fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1)),
+              ),
+            ],
+          ]),
+          subtitle: Text(u['email'] ?? '',
+              style: GoogleFonts.roboto(
+                  color: theme.cap(context), fontSize: 12)),
+          trailing: PopupMenuButton<String>(
+            icon: Icon(Icons.more_vert, color: theme.cap(context)),
+            onSelected: (v) {
+              if (v == 'admin') _toggleAdmin(u['id'], isAdmin);
+              if (v == 'delete') _deleteUser(u['id']);
+            },
             itemBuilder: (_) => [
               PopupMenuItem(
+                value: 'admin',
                 child: Text(isAdmin ? 'Huỷ Admin' : 'Cấp Admin'),
-                onTap: () => _toggleAdmin(u['id'], isAdmin),
               ),
-              PopupMenuItem(
-                child: const Text('Xoá người dùng', style: TextStyle(color: Colors.red)),
-                onTap: () => _deleteUser(u['id']),
+              const PopupMenuItem(
+                value: 'delete',
+                child: Text('Xoá người dùng',
+                    style: TextStyle(color: Colors.red)),
               ),
             ],
           ),
@@ -133,11 +179,18 @@ class _AdminScreenState extends State<AdminScreen> {
     );
   }
 
-  Widget _buildCommentsTab() {
+  Widget _buildCommentsTab(ThemeProvider theme) {
+    if (_comments.isEmpty) {
+      return Center(
+          child: Text('Chưa có bình luận nào',
+              style: GoogleFonts.merriweather(
+                  color: theme.cap(context),
+                  fontStyle: FontStyle.italic)));
+    }
     return ListView.builder(
       itemCount: _comments.length,
-      itemBuilder: (context, index) {
-        final c = _comments[index];
+      itemBuilder: (_, i) {
+        final c = _comments[i];
         return CommentWidget(
           comment: c,
           canDelete: true,

@@ -3,7 +3,7 @@
 
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import '../../models/article_model.dart';
+import '../models/article_model.dart';
 
 class LocalDbService {
   static Database? _db;

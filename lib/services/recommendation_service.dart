@@ -97,8 +97,8 @@ class RecommendationService {
 
       // Score = 50% interest + 30% recency + 20% engagement
       final score = (totalWeight > 0
-          ? (catScore / totalWeight) * 50
-          : 0) +
+              ? (catScore / totalWeight) * 50
+              : 0) +
           recency * 30 +
           engagement * 20 / 100;
 

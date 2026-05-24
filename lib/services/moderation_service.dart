@@ -61,7 +61,7 @@ class ModerationService {
     for (final kw in AppStrings.toxicKeywords) {
       if (lower.contains(kw)) {
         return (ModerationResult.toxic,
-        'Bình luận chứa từ ngữ không phù hợp.');
+            'Bình luận chứa từ ngữ không phù hợp.');
       }
     }
 
@@ -71,7 +71,7 @@ class ModerationService {
         final score = await _perspectiveScore(text);
         if (score >= 0.85) {
           return (ModerationResult.toxic,
-          'Bình luận bị từ chối tự động (điểm độc hại: ${(score * 100).toStringAsFixed(0)}%).');
+              'Bình luận bị từ chối tự động (điểm độc hại: ${(score * 100).toStringAsFixed(0)}%).');
         }
       } catch (_) {
         // Nếu API lỗi → vẫn cho qua (fail-open)
@@ -90,14 +90,14 @@ class ModerationService {
     });
     final response = await http
         .post(Uri.parse(_perspectiveUrl),
-        headers: {'Content-Type': 'application/json'},
-        body: body)
+            headers: {'Content-Type': 'application/json'},
+            body: body)
         .timeout(const Duration(seconds: 5));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return (data['attributeScores']['TOXICITY']
-      ['summaryScore']['value'] as num)
+              ['summaryScore']['value'] as num)
           .toDouble();
     }
     throw Exception('Perspective API error: ${response.statusCode}');

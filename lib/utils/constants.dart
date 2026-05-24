@@ -11,11 +11,9 @@ class AppColors {
   static const Color background    = Color(0xFFF8F5F0);
   static const Color surface       = Color(0xFFFFFFFF);
   static const Color divider       = Color(0xFFE0D9CF);
-
   static const Color textPrimary   = Color(0xFF1A1208);
   static const Color textSecondary = Color(0xFF6B5E4E);
   static const Color textCaption   = Color(0xFF9E9082);
-
   static const Color accent        = Color(0xFFC0392B);
   static const Color accentLight   = Color(0xFFFDECEC);
 
@@ -36,11 +34,9 @@ class DarkColors {
   static const Color background    = Color(0xFF0F0F0F);
   static const Color surface       = Color(0xFF1C1C1E);
   static const Color divider       = Color(0xFF2C2C2E);
-
   static const Color textPrimary   = Color(0xFFF2F2F7);
   static const Color textSecondary = Color(0xFFAEAEB2);
   static const Color textCaption   = Color(0xFF636366);
-
   static const Color accent        = Color(0xFFFF453A);
   static const Color accentLight   = Color(0xFF3A1414);
 }

@@ -3,16 +3,14 @@
 import 'package:google_generative_ai/google_generative_ai.dart';
 
 class AiService {
-  // Thay bằng API Key của bạn lấy từ: https://aistudio.google.com/
-  static const String _apiKey = 'YAIzaSyCZc5csWny3Yo5vlYP_wfuhOuVJ9TfyosY';
+  static const String _apiKey = 'AIzaSyBc1K0t-y6kTXPFTObRKyHE7_IwXzjQqgI';
 
   Future<String> summarizeArticle(String title, String content) async {
-    if (_apiKey == 'YOUR_GEMINI_API_KEY') {
-      return 'Vui lòng cung cấp API Key của Gemini để sử dụng tính năng tóm tắt.';
-    }
-
     try {
-      final model = GenerativeModel(model: 'gemini-pro', apiKey: _apiKey);
+      final model = GenerativeModel(
+        model: 'gemini-3.1-flash-lite',
+        apiKey: _apiKey,
+      );
 
       final prompt = '''
       Bạn là một trợ lý ảo chuyên tóm tắt tin tức. Hãy tóm tắt bài báo sau đây thành 3-4 câu ngắn gọn, súc tích và giữ lại những ý chính quan trọng nhất.
@@ -26,7 +24,7 @@ class AiService {
       final response = await model.generateContent([Content.text(prompt)]);
       return response.text ?? 'Không thể tạo bản tóm tắt lúc này.';
     } catch (e) {
-      return 'Lỗi khi gọi AI: \$e';
+      return 'Lỗi khi gọi AI: $e';
     }
   }
 }

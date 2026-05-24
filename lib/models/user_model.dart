@@ -31,19 +31,19 @@ class UserModel {
   }
 
   Map<String, dynamic> toMap() => {
-    'username'  : username,
-    'email'     : email,
-    'avatarUrl' : avatarUrl,
-    'isAdmin'   : isAdmin,
-    'createdAt' : createdAt.millisecondsSinceEpoch,
-  };
+        'username'  : username,
+        'email'     : email,
+        'avatarUrl' : avatarUrl,
+        'isAdmin'   : isAdmin,
+        'createdAt' : createdAt.millisecondsSinceEpoch,
+      };
 
   UserModel copyWith({String? username, String? avatarUrl}) => UserModel(
-    id: id,
-    username: username ?? this.username,
-    email: email,
-    avatarUrl: avatarUrl ?? this.avatarUrl,
-    isAdmin: isAdmin,
-    createdAt: createdAt,
-  );
+        id: id,
+        username: username ?? this.username,
+        email: email,
+        avatarUrl: avatarUrl ?? this.avatarUrl,
+        isAdmin: isAdmin,
+        createdAt: createdAt,
+      );
 }

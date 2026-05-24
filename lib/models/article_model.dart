@@ -69,18 +69,18 @@ class ArticleModel {
   }
 
   Map<String, dynamic> toFirestore() => {
-    'id'          : id,
-    'title'       : title,
-    'content'     : content,
-    'summary'     : summary,
-    'imageUrl'    : imageUrl,
-    'category'    : category,
-    'author'      : author,
-    'sourceUrl'   : sourceUrl,
-    'publishedAt' : publishedAt.millisecondsSinceEpoch,
-    'likesCount'  : likesCount,
-    'commentsCount': commentsCount,
-  };
+        'id'          : id,
+        'title'       : title,
+        'content'     : content,
+        'summary'     : summary,
+        'imageUrl'    : imageUrl,
+        'category'    : category,
+        'author'      : author,
+        'sourceUrl'   : sourceUrl,
+        'publishedAt' : publishedAt.millisecondsSinceEpoch,
+        'likesCount'  : likesCount,
+        'commentsCount': commentsCount,
+      };
 
   // ── SQLite local cache ─────────────────────────────────────────
   factory ArticleModel.fromSqlite(Map<String, dynamic> row) {
@@ -98,16 +98,16 @@ class ArticleModel {
   }
 
   Map<String, dynamic> toSqlite() => {
-    'id'          : id,
-    'title'       : title,
-    'content'     : content,
-    'summary'     : summary,
-    'imageUrl'    : imageUrl,
-    'category'    : category,
-    'author'      : author,
-    'sourceUrl'   : sourceUrl,
-    'publishedAt' : publishedAt.millisecondsSinceEpoch,
-  };
+        'id'          : id,
+        'title'       : title,
+        'content'     : content,
+        'summary'     : summary,
+        'imageUrl'    : imageUrl,
+        'category'    : category,
+        'author'      : author,
+        'sourceUrl'   : sourceUrl,
+        'publishedAt' : publishedAt.millisecondsSinceEpoch,
+      };
 
   // ── Helpers ────────────────────────────────────────────────────
   static String _buildContent(Map<String, dynamic> json) {

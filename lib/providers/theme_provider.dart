@@ -84,10 +84,13 @@ class ThemeProvider extends ChangeNotifier {
       unselectedItemColor: AppColors.textCaption,
       elevation: 0,
     ),
-    tabBarTheme: const TabBarThemeData(
+    tabBarTheme: TabBarThemeData(
       labelColor: AppColors.accent,
       unselectedLabelColor: AppColors.textCaption,
-      indicatorColor: AppColors.accent,
+      indicator: const UnderlineTabIndicator(
+        borderSide: BorderSide(color: AppColors.accent, width: 2),
+      ),
+      dividerColor: Colors.transparent,
     ),
   );
 
@@ -112,10 +115,13 @@ class ThemeProvider extends ChangeNotifier {
       unselectedItemColor: DarkColors.textCaption,
       elevation: 0,
     ),
-    tabBarTheme: const TabBarThemeData( // <--- Thêm chữ "Data" vào đây
-      labelColor: DarkColors.accent, // (Hoặc AppColors.accent ở lightTheme)
+    tabBarTheme: TabBarThemeData(
+      labelColor: DarkColors.accent,
       unselectedLabelColor: DarkColors.textCaption,
-      indicatorColor: DarkColors.accent,
+      indicator: const UnderlineTabIndicator(
+        borderSide: BorderSide(color: DarkColors.accent, width: 2),
+      ),
+      dividerColor: Colors.transparent,
     ),
   );
 

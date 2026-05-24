@@ -34,11 +34,11 @@ class CommentModel {
   }
 
   Map<String, dynamic> toMap() => {
-    'userId'     : userId,
-    'articleId'  : articleId,
-    'content'    : content,
-    'username'   : username,
-    'userAvatar' : userAvatar,
-    'createdAt'  : createdAt.millisecondsSinceEpoch,
-  };
+        'userId'     : userId,
+        'articleId'  : articleId,
+        'content'    : content,
+        'username'   : username,
+        'userAvatar' : userAvatar,
+        'createdAt'  : createdAt.millisecondsSinceEpoch,
+      };
 }

@@ -22,10 +22,16 @@ class AuthProvider extends ChangeNotifier {
 
   // ── Init: kiểm tra session ────────────────────────────────────
   Future<void> init() async {
-    final firebaseUser = _service.currentUser;
-    if (firebaseUser != null) {
-      _user = await _service.getUserData(firebaseUser.uid);
-      notifyListeners();
+    try {
+      final firebaseUser = _service.currentUser;
+      if (firebaseUser != null) {
+        // Timeout 5s để tránh treo splash nếu Firestore chậm
+        _user = await _service.getUserData(firebaseUser.uid)
+            .timeout(const Duration(seconds: 5), onTimeout: () => null);
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('AuthProvider init error: \$e');
     }
   }
 

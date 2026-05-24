@@ -2,9 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import '../../models/comment_model.dart';
-import '../../utils/constants.dart';
+import '../models/comment_model.dart';
+import '../providers/theme_provider.dart';
+import '../utils/constants.dart';
 
 class CommentWidget extends StatelessWidget {
   final CommentModel comment;
@@ -20,77 +22,60 @@ class CommentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.watch<ThemeProvider>();
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: AppColors.divider)),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: theme.div(context))),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Avatar ────────────────────────────────────────────
+          // Avatar
           CircleAvatar(
             radius: 18,
-            backgroundColor: AppColors.accentLight,
+            backgroundColor: theme.accLight(context),
             backgroundImage: comment.userAvatar != null
-                ? NetworkImage(comment.userAvatar!)
-                : null,
+                ? NetworkImage(comment.userAvatar!) : null,
             child: comment.userAvatar == null
                 ? Text(
-              comment.username.isNotEmpty
-                  ? comment.username[0].toUpperCase()
-                  : '?',
-              style: GoogleFonts.playfairDisplay(
-                color: AppColors.accent,
-                fontWeight: FontWeight.bold,
-              ),
-            )
+                    comment.username.isNotEmpty
+                        ? comment.username[0].toUpperCase() : '?',
+                    style: GoogleFonts.playfairDisplay(
+                        color: theme.acc(context), fontWeight: FontWeight.bold),
+                  )
                 : null,
           ),
           const SizedBox(width: 10),
 
-          // ── Content ───────────────────────────────────────────
+          // Content
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Text(
-                      comment.username,
+                Row(children: [
+                  Text(comment.username,
                       style: GoogleFonts.roboto(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      timeago.format(comment.createdAt, locale: 'vi'),
+                          fontSize: 13, fontWeight: FontWeight.w700,
+                          color: theme.text(context))),
+                  const SizedBox(width: 6),
+                  Text(timeago.format(comment.createdAt, locale: 'vi'),
                       style: GoogleFonts.roboto(
-                        fontSize: 11,
-                        color: AppColors.textCaption,
-                      ),
+                          fontSize: 11, color: theme.cap(context))),
+                  if (canDelete) ...[
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: onDelete,
+                      child: Icon(Icons.delete_outline,
+                          size: 16, color: theme.acc(context)),
                     ),
-                    if (canDelete) ...[
-                      const Spacer(),
-                      GestureDetector(
-                        onTap: onDelete,
-                        child: const Icon(Icons.delete_outline,
-                            size: 16, color: AppColors.accent),
-                      ),
-                    ],
                   ],
-                ),
+                ]),
                 const SizedBox(height: 4),
-                Text(
-                  comment.content,
-                  style: GoogleFonts.merriweather(
-                    fontSize: 13,
-                    color: AppColors.textSecondary,
-                    height: 1.5,
-                  ),
-                ),
+                Text(comment.content,
+                    style: GoogleFonts.merriweather(
+                        fontSize: 13, color: theme.sub(context), height: 1.5)),
               ],
             ),
           ),
